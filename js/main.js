@@ -20,16 +20,24 @@ $(document).ready(function(){
         $.each(agents, function(i, agent) {
             agent.renderAgent();
         });
+
+        for (i=0;i<100;i++){//only show a random selection of 100 doing networking - too heavy otherwise
+            agents[i].showNetworking();
+        }
+
+        //begin communication among agents
+        amorphNameSpace.dataConnection = setInterval(function(){
+            $.each(agents, function(i, agent) {
+                agent.transmitData();
+            });
+        } , 3000);
+
+
         return agents;
     };
 
     //init stuff - this should only run once
     amorphNameSpace.mainCanvas = Raphael(document.getElementById("mainWrapper"), 900, 500);//main canvas
-    amorphNameSpace.agents = amorphNameSpace.createAgentArray(400);
-
-    amorphNameSpace.agents[0].changePosition(300,300);
-    amorphNameSpace.agents[0].changeColor("#f00");
-
 
 
 });
