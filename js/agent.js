@@ -9,51 +9,45 @@ function Agent(xPos, yPos){
     this.radius = 10;
     this.position = [xPos, yPos];
     this.isAnimatingComm = false;
+    this.neighborAgents = [];
 }
 
 Agent.prototype.renderAgent = function() {
-    if (!this.renderedCircle){
-        var circle = amorphNameSpace.mainCanvas.circle(this.position[0], this.position[1], this.radius);
-        circle.attr("stroke", "#000");
-        this.renderedCircle = circle;
-    } else {
-        this.renderedCircle.transform("T" + this.position[0] + "," + this.position[1]);
+    if (this.renderedCircle){
+        this.renderedCircle.remove();
+        console.log("something is going wrong here");
     }
-    this.renderedCircle.attr("fill", this.color);
-
+    var circle = amorphNameSpace.mainCanvas.circle(this.position[0], this.position[1], this.radius);
+    circle.attr({"stroke":"#000", "fill":this.color});
+    this.renderedCircle = circle;
 };
 
 Agent.prototype.changePosition = function(xPos, yPos) {
     this.position = [xPos, yPos];
-    this.renderAgent();
+    this.renderedCircle.transform("T" + this.position[0] + "," + this.position[1]);
 };
 
 Agent.prototype.changeColor = function(color) {
     this.color = color;
-    this.renderAgent();
+    this.renderedCircle.attr("fill", this.color);
 };
 
 Agent.prototype.transmitData = function() {
 };
 
 Agent.prototype.getAllNeighbors = function() {
-    console.log(this);
     var neighbors = [];
     var self = this;
-    var radSquared = Math.pow(amorphNameSpace.commRadius*this.radius/2, 2);//commRadius is really a scaling factor
+    //if dx^2+dy^2<=commRad^2
+    var radSquared = Math.pow(amorphNameSpace.commRadius*this.radius, 2);//commRadius is really a scaling factor
     $.each(amorphNameSpace.agents, function(i, agent) {
         if (agent != self){
             if ((Math.pow(agent.position[0]-self.position[0], 2) + Math.pow(agent.position[1]-self.position[1], 2)) <= radSquared){
                 neighbors.push(agent);
-                agent.changeColor("#0f0");
-            } else {
-//                agent.changeColor("#ff0");
             }
         }
     });
-    console.log(neighbors);
-//    console.log(amorphNameSpace.mainCanvas.raphael());
-//    $("svg").getIntersectionList(rect, referenceElement);
+    this.neighborAgents = neighbors;
 };
 
 Agent.prototype.showNetworking = function(){
