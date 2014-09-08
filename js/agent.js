@@ -4,8 +4,9 @@
 
 var amorphNameSpace = amorphNameSpace || {};
 
-function Agent(xPos, yPos){
+function Agent(xPos, yPos, color){
     this.color = "#fff";
+    if (color) this.color = color;
     this.radius = 10;
     this.position = [xPos, yPos];
     this.isAnimatingComm = false;
@@ -33,6 +34,11 @@ Agent.prototype.changeColor = function(color) {
 };
 
 Agent.prototype.transmitData = function() {
+
+};
+
+Agent.prototype.receiveData = function() {
+
 };
 
 Agent.prototype.getAllNeighbors = function() {

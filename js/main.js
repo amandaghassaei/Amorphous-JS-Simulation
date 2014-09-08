@@ -16,6 +16,12 @@ $(document).ready(function(){
             agents.push(new Agent(xPos, yPos));
         }
 
+        //make two special agents that we will draw a line between - agents[-1] and agents[-2]
+        amorphNameSpace.node1 = new Agent(20, amorphNameSpace.mainCanvas.height/2, "#f00")
+        agents.push(amorphNameSpace.node1);
+        amorphNameSpace.node2 = new Agent(amorphNameSpace.mainCanvas.width-20, amorphNameSpace.mainCanvas.height/2, "#f00");
+        agents.push(amorphNameSpace.node2);
+
         //draw all agents on canvas
         $.each(agents, function(i, agent) {
             agent.renderAgent();
