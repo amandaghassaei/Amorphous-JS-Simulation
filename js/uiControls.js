@@ -8,14 +8,11 @@ $(document).ready(function(){
 
     $(".slider").slider();
 
-    $("#numAgents").on("slidechange", function(event, ui){
-        amorphNameSpace.agents = amorphNameSpace.createAgentArray(getNumAgentsForSliderVal(ui.value));
+
+    var numAgents = $("#numAgents");
+    numAgents.on("slidechange", function(event, ui){//recalc num agents on slider change
+        amorphNameSpace.agents = amorphNameSpace.createAgentArray(ui.value*10+300);
     });
-
-    $("#numAgents").slider('value',50);
-
-    function getNumAgentsForSliderVal(val){
-        return val*10+300;
-    }
+    numAgents.slider('value',50);//set initial val
 
 });

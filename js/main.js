@@ -21,13 +21,11 @@ $(document).ready(function(){
             agent.renderAgent();
         });
         return agents;
-    }
+    };
 
     //init stuff - this should only run once
     amorphNameSpace.mainCanvas = Raphael(document.getElementById("mainWrapper"), 900, 500);//main canvas
     amorphNameSpace.agents = amorphNameSpace.createAgentArray(400);
-
-
 
     amorphNameSpace.agents[0].changePosition(300,300);
     amorphNameSpace.agents[0].changeColor("#f00");

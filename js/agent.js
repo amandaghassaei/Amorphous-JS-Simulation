@@ -13,7 +13,6 @@ function Agent(xPos, yPos){
 Agent.prototype.renderAgent = function() {
     if (!this.renderedCircle){
         var circle = amorphNameSpace.mainCanvas.circle(this.position[0], this.position[1], this.radius);
-        console.log("new agent");
         circle.attr("stroke", "#000");
         this.renderedCircle = circle;
     } else {
