@@ -49,7 +49,7 @@ Agent.prototype.showNetworking = function(){
                     self.animateNeighborCommunication();
                 } else {
                     clearInterval(self.neighborAnimation);
-                    this.isAnimatingComm = false;
+                    self.isAnimatingComm = false;
                 }
             }, 3000);
         }

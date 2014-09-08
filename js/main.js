@@ -21,10 +21,6 @@ $(document).ready(function(){
             agent.renderAgent();
         });
 
-        for (i=0;i<100;i++){//only show a random selection of 100 doing networking - too heavy otherwise
-            agents[i].showNetworking();
-        }
-
         //begin communication among agents
         amorphNameSpace.dataConnection = setInterval(function(){
             $.each(agents, function(i, agent) {
