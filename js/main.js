@@ -35,5 +35,4 @@ $(document).ready(function(){
     //init stuff - this should only run once
     amorphNameSpace.mainCanvas = Raphael(document.getElementById("mainWrapper"), 900, 500);//main canvas
 
-
 });

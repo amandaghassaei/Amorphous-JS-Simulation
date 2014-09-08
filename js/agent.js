@@ -36,6 +36,26 @@ Agent.prototype.changeColor = function(color) {
 Agent.prototype.transmitData = function() {
 };
 
+Agent.prototype.getAllNeighbors = function() {
+    console.log(this);
+    var neighbors = [];
+    var self = this;
+    var radSquared = Math.pow(amorphNameSpace.commRadius*this.radius/2, 2);//commRadius is really a scaling factor
+    $.each(amorphNameSpace.agents, function(i, agent) {
+        if (agent != self){
+            if ((Math.pow(agent.position[0]-self.position[0], 2) + Math.pow(agent.position[1]-self.position[1], 2)) <= radSquared){
+                neighbors.push(agent);
+                agent.changeColor("#0f0");
+            } else {
+//                agent.changeColor("#ff0");
+            }
+        }
+    });
+    console.log(neighbors);
+//    console.log(amorphNameSpace.mainCanvas.raphael());
+//    $("svg").getIntersectionList(rect, referenceElement);
+};
+
 Agent.prototype.showNetworking = function(){
     if (this.isAnimatingComm) return;
     this.isAnimatingComm = true;

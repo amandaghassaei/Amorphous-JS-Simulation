@@ -8,6 +8,14 @@ $(document).ready(function(){
 
     $(".slider").slider();
 
+    var commRadius = $("#commRadius");
+    commRadius.on("slide", function(event, ui){
+        amorphNameSpace.commRadius = ui.value/20.0+2;
+    });
+    commRadius.on("slidechange", function(event, ui){//recalc num agents on slider change
+        amorphNameSpace.commRadius = ui.value/20.0+2;
+    });
+    commRadius.slider('value',30);//set initial val
 
     var numAgents = $("#numAgents");
     numAgents.on("slidechange", function(event, ui){//recalc num agents on slider change
@@ -17,10 +25,11 @@ $(document).ready(function(){
             });
         }
         amorphNameSpace.agents = amorphNameSpace.createAgentArray(ui.value*10+300);
+        amorphNameSpace.agents[0].changeColor("#f00");
+        amorphNameSpace.agents[0].getAllNeighbors();
     });
     numAgents.slider('value',50);//set initial val
 
-    var commRadius = $("#commRadius");
     commRadius.on("slidestart", function(event, ui){
         for (var i=0;i<100;i++){//only show a random selection of 100 doing networking - too heavy otherwise
             amorphNameSpace.agents[i].showNetworking();
@@ -31,12 +40,5 @@ $(document).ready(function(){
             agent.hideNetworking();
         });
     });
-    commRadius.on("slide", function(event, ui){
-        amorphNameSpace.commRadius = ui.value/20.0+2;
-    });
-    commRadius.on("slidechange", function(event, ui){//recalc num agents on slider change
-        amorphNameSpace.commRadius = ui.value/20.0+2;
-    });
-    commRadius.slider('value',30);//set initial val
 
 });
