@@ -1,0 +1,16 @@
+
+
+#mainWrapper{
+    margin-left: auto;
+    margin-right: auto;
+    width: 900px;
+}
+
+#uiControls{
+    width: 300px;
+    padding-top:30px
+}
+
+.slider {
+    margin:20px 0;
+}
