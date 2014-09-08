@@ -34,11 +34,22 @@ Agent.prototype.changeColor = function(color) {
 };
 
 Agent.prototype.transmitData = function() {
-
+    if (!this.neighborAgents){
+        console.log("no neighbors");
+        return;
+    }
+    var self = this;
+    $.each(this.neighborAgents, function(i, agent) {
+        var transHopNum = self.hopNum + 1;
+        agent.receiveData(transHopNum);
+    });
 };
 
-Agent.prototype.receiveData = function() {
-
+Agent.prototype.receiveData = function(hopNum) {
+    if (!this.hopNum || hopNum < this.hopNum){
+        this.hopNum = hopNum;
+        this.transmitData();
+    }
 };
 
 Agent.prototype.getAllNeighbors = function() {
