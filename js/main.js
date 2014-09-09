@@ -42,13 +42,17 @@ $(document).ready(function(){
         });
 
         amorphNameSpace.node1.node1HopCount = 0;
-//        amorphNameSpace.node2.hopCounts["node2"] = 0;
         amorphNameSpace.node1.transmitData();
         console.log("done");
 
         if (amorphNameSpace.shouldShowGrad){
+            var maxHopCount = 0;
             $.each(amorphNameSpace.agents, function(i, agent) {
-                agent.renderGrad(true);
+                if (agent.hopCount>maxHopCount) maxHopCount = agent.hopCount;
+            });
+            var scalingFactor = 255/maxHopCount;
+            $.each(amorphNameSpace.agents, function(i, agent) {
+                agent.renderGrad(true, scalingFactor);
             });
         }
 //        amorphNameSpace.node2.transmitData();

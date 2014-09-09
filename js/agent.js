@@ -70,18 +70,22 @@ Agent.prototype.receiveData = function(hopCount, successorId){
         this.successorId = successorId;
 
         //transmit new hop to neighbors
-        this.transmitData();
+        if (this == amorphNameSpace.node2){
+            //if we've reached the end point
+        } else {
+            this.transmitData();
+        }
     }
 };
 
-Agent.prototype.renderGrad = function(shouldShowGrad){
+Agent.prototype.renderGrad = function(shouldShowGrad, scalingFactor){
     //create color based on hop count
     if (shouldShowGrad){
         if (!this.hopCount || this.hopCount==null) {
             this.changeColor("#fff");
             return;
         }
-        var hopString = (this.hopCount*4).toString(16);
+        var hopString = (parseInt(this.hopCount*scalingFactor)).toString(16);
         if (hopString.length == 1){
             hopString = "0" + hopString;
         }

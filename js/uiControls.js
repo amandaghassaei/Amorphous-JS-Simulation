@@ -52,13 +52,18 @@ $(document).ready(function(){
     });
     numAgents.slider('value',50);//set initial val
 
-    amorphNameSpace.shouldShowGrad = false;//toggle display of hop grad (slows rendering)
+    amorphNameSpace.shouldShowGrad = false;//toggle display of hop grad (slows rendering slightly)
     $("#gradientVis").click(function(){
         var newState = $(this).is(":checked");
         if (newState != amorphNameSpace.shouldShowGrad){
             amorphNameSpace.shouldShowGrad = newState;
+            var maxHopCount = 0;
             $.each(amorphNameSpace.agents, function(i, agent) {
-                agent.renderGrad(newState);
+                if (agent.hopCount>maxHopCount) maxHopCount = agent.hopCount;
+            });
+            var scalingFactor = 255/maxHopCount;
+            $.each(amorphNameSpace.agents, function(i, agent) {
+                agent.renderGrad(newState, scalingFactor);
             });
         }
     });
