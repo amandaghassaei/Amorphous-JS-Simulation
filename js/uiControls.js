@@ -57,14 +57,7 @@ $(document).ready(function(){
         var newState = $(this).is(":checked");
         if (newState != amorphNameSpace.shouldShowGrad){
             amorphNameSpace.shouldShowGrad = newState;
-            var maxHopCount = 0;
-            $.each(amorphNameSpace.agents, function(i, agent) {
-                if (agent.hopCount>maxHopCount) maxHopCount = agent.hopCount;
-            });
-            var scalingFactor = 255/maxHopCount;
-            $.each(amorphNameSpace.agents, function(i, agent) {
-                agent.renderGrad(newState, scalingFactor);
-            });
+            amorphNameSpace.renderAllColors();
         }
     });
 

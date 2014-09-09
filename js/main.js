@@ -17,9 +17,9 @@ $(document).ready(function(){
         }
 
         //make two special agents that we will draw a line between - agents[-1] and agents[-2]
-        amorphNameSpace.node1 = new Agent(20, amorphNameSpace.mainCanvas.height/2, "#f00");
+        amorphNameSpace.node1 = new Agent(20, amorphNameSpace.mainCanvas.height/2, true);
         agents.push(amorphNameSpace.node1);
-        amorphNameSpace.node2 = new Agent(amorphNameSpace.mainCanvas.width-20, amorphNameSpace.mainCanvas.height/2, "#f00");
+        amorphNameSpace.node2 = new Agent(amorphNameSpace.mainCanvas.width-20, amorphNameSpace.mainCanvas.height/2, true);
         agents.push(amorphNameSpace.node2);
 
         //draw all agents on canvas
@@ -43,8 +43,12 @@ $(document).ready(function(){
 
         amorphNameSpace.node1.node1HopCount = 0;
         amorphNameSpace.node1.transmitData();
-        console.log("done");
 
+        //display grad
+        amorphNameSpace.renderAllColors();
+    };
+
+    amorphNameSpace.renderAllColors = function(){
         if (amorphNameSpace.shouldShowGrad){
             var maxHopCount = 0;
             $.each(amorphNameSpace.agents, function(i, agent) {
@@ -55,7 +59,9 @@ $(document).ready(function(){
                 agent.renderGrad(true, scalingFactor);
             });
         }
-//        amorphNameSpace.node2.transmitData();
+        $.each(amorphNameSpace.agents, function(i, agent) {
+            if (agent.state) agent.changeColor("#f00");
+        });
     };
 
     //init stuff - this should only run once

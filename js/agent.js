@@ -4,14 +4,13 @@
 
 var amorphNameSpace = amorphNameSpace || {};
 
-function Agent(xPos, yPos, color){
+function Agent(xPos, yPos, state){
     this.id = parseInt(Math.random()*100000);//random id number
     this.successorId = null;
     this.state = false;//true if part of connection line
+    if (state) this.state = state;
 
     this.color = "#fff";
-    if (color) this.color = color;
-
     this.radius = 10;
     this.position = [xPos, yPos];//agent doesn't ever "use" this info, just for rendering
 
@@ -67,21 +66,41 @@ Agent.prototype.receiveData = function(hopCount, successorId){
     if (hopCount>80) return;//avoid crashing the browser
     if (!this.hopCount || hopCount<this.hopCount){
         this.hopCount = hopCount;
-        this.successorId = successorId;
 
         //transmit new hop to neighbors
         if (this == amorphNameSpace.node2){
             //if we've reached the end point
+            if (this.successorId){
+                this.findNeighborWithId(this.successorId).setState(false);
+            }
+            this.successorId = successorId;
+            this.findNeighborWithId(successorId).setState(true);
         } else {
+            this.successorId = successorId;
             this.transmitData();
         }
     }
 };
 
+Agent.prototype.findNeighborWithId = function(id){
+    var successor = null;
+    $.each(this.neighborAgents, function(i, agent) {
+        if (agent.id == id) successor = agent
+    });
+    return successor;
+};
+
+Agent.prototype.setState = function(state){
+    if (state != this.state){
+//        this.findNeighborWithId(this.successorId).setState(true);
+    }
+    this.state = state;
+};
+
 Agent.prototype.renderGrad = function(shouldShowGrad, scalingFactor){
     //create color based on hop count
     if (shouldShowGrad){
-        if (!this.hopCount || this.hopCount==null) {
+        if (!this.hopCount) {
             this.changeColor("#fff");
             return;
         }
