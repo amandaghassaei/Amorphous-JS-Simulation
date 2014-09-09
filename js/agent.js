@@ -62,20 +62,20 @@ Agent.prototype.transmitData = function(){
 };
 
 Agent.prototype.receiveData = function(hopCount, successorId){
-//    var shouldTransmitToNeighbors = false;
     if (hopCount>80) return;//avoid crashing the browser
     if (!this.hopCount || hopCount<this.hopCount){
         this.hopCount = hopCount;
 
-        //transmit new hop to neighbors
-        if (this == amorphNameSpace.node2){
-            //if we've reached the end point
-            if (this.successorId){
-                this.findNeighborWithId(this.successorId).setState(false);
-            }
+        if (this.state){
+            //if we've reached a node on the line
+            var successor = this.findNeighborWithId(this.successorId);
             this.successorId = successorId;
-            this.findNeighborWithId(successorId).setState(true);
+            if (successor){//successor may have been removed
+                successor.setNewState(false);
+            }
+            this.findNeighborWithId(successorId).setNewState(true);
         } else {
+            //transmit new hop to neighbors
             this.successorId = successorId;
             this.transmitData();
         }
@@ -83,18 +83,22 @@ Agent.prototype.receiveData = function(hopCount, successorId){
 };
 
 Agent.prototype.findNeighborWithId = function(id){
+    if (!id) return null;
     var successor = null;
     $.each(this.neighborAgents, function(i, agent) {
-        if (agent.id == id) successor = agent
+        if (agent.id == id) successor = agent;
     });
     return successor;
 };
 
-Agent.prototype.setState = function(state){
-    if (state != this.state){
-//        this.findNeighborWithId(this.successorId).setState(true);
+Agent.prototype.setNewState = function(state){
+    if (this == amorphNameSpace.node1) return;//do not change state of node1
+    if (state != this.state){//if the state is changing, be sure to relay these changes upstream
+        this.state = state;
+        var successor = this.findNeighborWithId(this.successorId);
+        if (successor) successor.setNewState(state);
     }
-    this.state = state;
+
 };
 
 Agent.prototype.renderGrad = function(shouldShowGrad, scalingFactor){
@@ -187,10 +191,6 @@ Agent.prototype.animateNeighborCommunication = function(){
 };
 
 Agent.prototype.destroy = function(){
-    if (this.dataConnection) {
-        clearInterval(this.dataConnection);
-        this.dataConnection = null;
-    }
     this.hideNetworking();
     if (this.neighborhood){
         this.neighborhood.remove();
@@ -201,5 +201,4 @@ Agent.prototype.destroy = function(){
         this.renderedCircle = null;
     }
     this.neighborAgents = null;
-}
-
+};
