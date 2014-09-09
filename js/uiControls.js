@@ -16,9 +16,7 @@ $(document).ready(function(){
         amorphNameSpace.commRadius = ui.value/20.0+2;
         if (amorphNameSpace.agents){
             $.each(amorphNameSpace.agents, function(i, agent) {
-                agent.getAllNeighbors();//make sure all references are lost
-                agent.changeColor("#fff");
-                agent.node1HopCount = null;
+                agent.getAllNeighbors();//make sure all old references are lost
             });
             amorphNameSpace.startTransmissions();
         }
@@ -43,17 +41,26 @@ $(document).ready(function(){
     numAgents.on("slidechange", function(event, ui){//recalc num agents on slider change
         if (amorphNameSpace.agents){
             $.each(amorphNameSpace.agents, function(i, agent) {
-                agent.destroy();//make sure all references are lost
+                agent.destroy();//make sure all old references are lost
             });
         }
-        amorphNameSpace.agents = amorphNameSpace.createAgentArray(ui.value*10+300);
+        amorphNameSpace.agents = amorphNameSpace.createAgentArray(ui.value*15+300);
         $.each(amorphNameSpace.agents, function(i, agent) {
             agent.getAllNeighbors();//make sure all references are lost
-            agent.changeColor("#fff");
-            agent.node1HopCount = null;
         });
         amorphNameSpace.startTransmissions();
     });
     numAgents.slider('value',50);//set initial val
+
+    amorphNameSpace.shouldShowGrad = false;//toggle display of hop grad (slows rendering)
+    $("#gradientVis").click(function(){
+        var newState = $(this).is(":checked");
+        if (newState != amorphNameSpace.shouldShowGrad){
+            amorphNameSpace.shouldShowGrad = newState;
+            $.each(amorphNameSpace.agents, function(i, agent) {
+                agent.renderGrad(newState);
+            });
+        }
+    });
 
 });

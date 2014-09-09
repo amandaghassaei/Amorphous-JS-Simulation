@@ -34,10 +34,23 @@ $(document).ready(function(){
         //begin communication among agents
 //        if (amorphNameSpace.dataConnection){
 //            clearInterval(amorphNameSpace.dataConnection);
+
 //        }
+
+        $.each(amorphNameSpace.agents, function(i, agent) {
+            agent.hopCount = null;
+        });
+
         amorphNameSpace.node1.node1HopCount = 0;
 //        amorphNameSpace.node2.hopCounts["node2"] = 0;
         amorphNameSpace.node1.transmitData();
+        console.log("done");
+
+        if (amorphNameSpace.shouldShowGrad){
+            $.each(amorphNameSpace.agents, function(i, agent) {
+                agent.renderGrad(true);
+            });
+        }
 //        amorphNameSpace.node2.transmitData();
     };
 

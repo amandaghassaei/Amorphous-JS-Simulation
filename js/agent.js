@@ -28,7 +28,7 @@ Agent.prototype.renderAgent = function(){
         console.log("something is going wrong here");
     }
     var circle = amorphNameSpace.mainCanvas.circle(this.position[0], this.position[1], this.radius);
-    circle.attr({"stroke":"#000", "fill":this.color});
+    circle.attr({"stroke":"#000", "fill":this.color, "opacity":"0.6"});
 
     //bind click events to circle - clicking of dragging will remove from canvas
     var self = this;
@@ -62,43 +62,38 @@ Agent.prototype.transmitData = function(){
     });
 };
 
-//Agent.prototype.incrementCounts = function(hopCounts){
-//    var newHopCounts = {};
-//    for (var key in hopCounts){
-//        if (hopCounts.hasOwnProperty(key)){
-//            newHopCounts[key] = hopCounts[key]+1;
-//        }
-//    }
-//    return newHopCounts;
-//};
-
 Agent.prototype.receiveData = function(hopCount, successorId){
-    var shouldTransmitToNeighbors = false;
-    if (hopCount>70) return;
-    if (!this.hopCount){
+//    var shouldTransmitToNeighbors = false;
+    if (hopCount>80) return;//avoid crashing the browser
+    if (!this.hopCount || hopCount<this.hopCount){
         this.hopCount = hopCount;
         this.successorId = successorId;
-        shouldTransmitToNeighbors = true;
-    }
-//    for (var key in hopCounts){
-//        if (hopCounts.hasOwnProperty(key)){
-//            if (hopCounts[key]>50) return;
-//            if (!this.hopCounts[key]){//|| this.hopCounts[key] > hopCounts[key]
-//                this.hopCounts[key] = hopCounts[key];
-//                shouldTransmitToNeighbors = true;
-//                this.changeColor("#"+ this.hopCounts["node1"] + "00");
-//            }
-//        }
-//    }
-    if (shouldTransmitToNeighbors) {
-        this.changeColor("#f00");
+
+        //transmit new hop to neighbors
         this.transmitData();
-    } else {
-        this.changeColor("#0f0");
+    }
+};
+
+Agent.prototype.renderGrad = function(shouldShowGrad){
+    //create color based on hop count
+    if (shouldShowGrad){
+        if (!this.hopCount || this.hopCount==null) {
+            this.changeColor("#fff");
+            return;
+        }
+        var hopString = (this.hopCount*4).toString(16);
+        if (hopString.length == 1){
+            hopString = "0" + hopString;
+        }
+        var newColor = "#00" + hopString + hopString;
+        this.changeColor(newColor);
+     } else {
+        this.changeColor("#fff");
     }
 };
 
 Agent.prototype.selectForRemoval = function(){
+    console.log(this.hopCount);
     var self = this;
     //remove from neighbors
     $.each(this.neighborAgents, function(i, agent) {
@@ -107,6 +102,7 @@ Agent.prototype.selectForRemoval = function(){
     });
     var myIndex = amorphNameSpace.agents.indexOf(this);
     amorphNameSpace.agents.splice(myIndex, 1);
+    amorphNameSpace.startTransmissions();
     this.destroy();
 };
 
