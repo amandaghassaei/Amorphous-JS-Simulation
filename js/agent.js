@@ -5,14 +5,21 @@
 var amorphNameSpace = amorphNameSpace || {};
 
 function Agent(xPos, yPos, color){
+    this.id = parseInt(Math.random()*100000);//random id number
+    this.successorId = null;
+    this.state = false;//true if part of connection line
+
     this.color = "#fff";
     if (color) this.color = color;
+
     this.radius = 10;
-    this.position = [xPos, yPos];
-    this.isAnimatingComm = false;
+    this.position = [xPos, yPos];//agent doesn't ever "use" this info, just for rendering
+
+    this.isAnimatingComm = false;//bool used to deal with communication radius animation
+
+    //neighbors and grad variables
     this.neighborAgents = [];
-    this.hopCounts = {};
-    this.node1HopCount = null;
+    this.hopCount = null;
 }
 
 Agent.prototype.renderAgent = function(){
@@ -26,6 +33,7 @@ Agent.prototype.renderAgent = function(){
     //bind click events to circle - clicking of dragging will remove from canvas
     var self = this;
     circle.click(function(){
+        if (self == amorphNameSpace.node1 || self == amorphNameSpace.node2) return;
         self.selectForRemoval();
     });
 
@@ -47,10 +55,10 @@ Agent.prototype.transmitData = function(){
         console.log("no neighbors");
         return;
     }
-    var dataToTransmit = this.node1HopCount + 1;
+    var dataToTransmit = this.hopCount + 1;
     var self = this;
     $.each(self.neighborAgents, function(i, agent){
-        agent.receiveData(dataToTransmit);
+        agent.receiveData(dataToTransmit, self.id);
     });
 };
 
@@ -64,13 +72,13 @@ Agent.prototype.transmitData = function(){
 //    return newHopCounts;
 //};
 
-Agent.prototype.receiveData = function(hopCount){
+Agent.prototype.receiveData = function(hopCount, successorId){
     var shouldTransmitToNeighbors = false;
     if (hopCount>70) return;
-    if (!this.node1HopCount){
-        this.node1HopCount = hopCount;
+    if (!this.hopCount){
+        this.hopCount = hopCount;
+        this.successorId = successorId;
         shouldTransmitToNeighbors = true;
-        console.log(this.node1HopCount);
     }
 //    for (var key in hopCounts){
 //        if (hopCounts.hasOwnProperty(key)){
