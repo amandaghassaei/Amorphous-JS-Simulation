@@ -17,7 +17,7 @@ $(document).ready(function(){
         }
 
         //make two special agents that we will draw a line between - agents[-1] and agents[-2]
-        amorphNameSpace.node1 = new Agent(20, amorphNameSpace.mainCanvas.height/2, "#f00")
+        amorphNameSpace.node1 = new Agent(20, amorphNameSpace.mainCanvas.height/2, "#f00");
         agents.push(amorphNameSpace.node1);
         amorphNameSpace.node2 = new Agent(amorphNameSpace.mainCanvas.width-20, amorphNameSpace.mainCanvas.height/2, "#f00");
         agents.push(amorphNameSpace.node2);
@@ -27,18 +27,23 @@ $(document).ready(function(){
             agent.renderAgent();
         });
 
-        //begin communication among agents
-        amorphNameSpace.dataConnection = setInterval(function(){
-            $.each(agents, function(i, agent) {
-                agent.transmitData();
-            });
-        } , 3000);
-
-
         return agents;
+    };
+
+    amorphNameSpace.startTransmissions = function(){
+        //begin communication among agents
+//        if (amorphNameSpace.dataConnection){
+//            clearInterval(amorphNameSpace.dataConnection);
+//        }
+        amorphNameSpace.node1.node1HopCount = 0;
+//        amorphNameSpace.node2.hopCounts["node2"] = 0;
+        amorphNameSpace.node1.transmitData();
+//        amorphNameSpace.node2.transmitData();
     };
 
     //init stuff - this should only run once
     amorphNameSpace.mainCanvas = Raphael(document.getElementById("mainWrapper"), 900, 500);//main canvas
+
+
 
 });

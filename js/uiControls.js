@@ -17,7 +17,10 @@ $(document).ready(function(){
         if (amorphNameSpace.agents){
             $.each(amorphNameSpace.agents, function(i, agent) {
                 agent.getAllNeighbors();//make sure all references are lost
+                agent.changeColor("#fff");
+                agent.node1HopCount = null;
             });
+            amorphNameSpace.startTransmissions();
         }
     });
     commRadius.on("slidestart", function(event, ui){
@@ -46,7 +49,10 @@ $(document).ready(function(){
         amorphNameSpace.agents = amorphNameSpace.createAgentArray(ui.value*10+300);
         $.each(amorphNameSpace.agents, function(i, agent) {
             agent.getAllNeighbors();//make sure all references are lost
+            agent.changeColor("#fff");
+            agent.node1HopCount = null;
         });
+        amorphNameSpace.startTransmissions();
     });
     numAgents.slider('value',50);//set initial val
 
