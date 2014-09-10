@@ -54,11 +54,9 @@ $(document).ready(function(){
 
     amorphNameSpace.shouldShowGrad = false;//toggle display of hop grad (slows rendering slightly)
     $("#gradientVis").click(function(){
-        var newState = $(this).is(":checked");
-        if (newState != amorphNameSpace.shouldShowGrad){
-            amorphNameSpace.shouldShowGrad = newState;
-            amorphNameSpace.renderAllColors();
-        }
+        amorphNameSpace.shouldShowGrad = true;
+        amorphNameSpace.renderAllColors();
+        amorphNameSpace.shouldShowGrad = false;
     });
 
     $("#refresh").click(function(){

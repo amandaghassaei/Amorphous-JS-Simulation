@@ -8,9 +8,12 @@ function Agent(xPos, yPos, state){
     this.id = parseInt(Math.random()*100000);//random id number
     this.successorId = null;
     this.state = false;//true if part of connection line
-    if (state) this.state = state;
-
     this.color = "#fff";
+    if (state) {
+        this.state = state;
+        this.color = "f00";
+    }
+
     this.radius = 10;
     this.position = [xPos, yPos];//agent doesn't ever "use" this info, just for rendering
     this.absoluteTranslation = [0, 0];//only used for end nodes - stupid way raphael  does transformations
@@ -93,7 +96,7 @@ Agent.prototype.receiveData = function(hopCount, successorId){
     if (!this.hopCount || hopCount<this.hopCount){
         this.hopCount = hopCount;
 
-        if (this.state){
+        if (this == amorphNameSpace.node2){
             //if we've reached a node on the line
             var successor = this.findNeighborWithId(this.successorId);
             this.successorId = successorId;
@@ -102,9 +105,20 @@ Agent.prototype.receiveData = function(hopCount, successorId){
             }
             this.findNeighborWithId(successorId).setNewState(true);
         } else {
+            this.state = false;
             //transmit new hop to neighbors
             this.successorId = successorId;
-            this.transmitData();
+
+            //animate transmission of data
+            var self = this;
+            this.renderedCircle.animate({'fill':'black'}, 50, function(){
+                self.transmitData();
+                if (self.state) {
+                    self.changeColor("#f00");
+                } else {
+                    self.changeColor("#fff");
+                }
+            });
         }
     }
 };
@@ -119,11 +133,21 @@ Agent.prototype.findNeighborWithId = function(id){
 };
 
 Agent.prototype.setNewState = function(state){
+    this.renderedCircle.stop();//cancel any animations
     if (this == amorphNameSpace.node1 || this == amorphNameSpace.node2) return;//do not change state of node1 or node 2
     if (state != this.state){//if the state is changing, be sure to relay these changes upstream
         this.state = state;
-        var successor = this.findNeighborWithId(this.successorId);
-        if (successor) successor.setNewState(state);
+        var self = this;
+        var successor = self.findNeighborWithId(this.successorId);
+        if (state) {
+            this.renderedCircle.animate({'fill':'#f00'}, 50, function(){
+                if (successor) successor.setNewState(state);
+            });
+        } else {
+            this.renderedCircle.animate({'fill':'#f00'}, 50, function(){
+                if (successor) successor.setNewState(state);
+            });
+        }
     }
 
 };
