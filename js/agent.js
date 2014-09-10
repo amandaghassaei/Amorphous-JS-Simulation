@@ -93,7 +93,7 @@ Agent.prototype.findNeighborWithId = function(id){
 };
 
 Agent.prototype.setNewState = function(state){
-    if (this == amorphNameSpace.node1) return;//do not change state of node1
+    if (this == amorphNameSpace.node1 || this == amorphNameSpace.node2) return;//do not change state of node1 or node 2
     if (state != this.state){//if the state is changing, be sure to relay these changes upstream
         this.state = state;
         var successor = this.findNeighborWithId(this.successorId);
@@ -121,7 +121,7 @@ Agent.prototype.renderGrad = function(shouldShowGrad, scalingFactor){
 };
 
 Agent.prototype.selectForRemoval = function(){
-    console.log(this.hopCount);
+    console.log(this);
     var self = this;
     //remove from neighbors
     $.each(this.neighborAgents, function(i, agent) {

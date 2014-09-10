@@ -35,8 +35,11 @@ $(document).ready(function(){
         //expire hop count - can I get rid of this?
         $.each(amorphNameSpace.agents, function(i, agent) {
             agent.hopCount = null;
+            agent.state = false;
         });
 
+        amorphNameSpace.node1.state = true;
+        amorphNameSpace.node2.state = true;
         amorphNameSpace.node1.hopCount = 0;
         amorphNameSpace.node1.transmitData();//start data transmission from node 1
 
@@ -56,7 +59,11 @@ $(document).ready(function(){
             });
         }
         $.each(amorphNameSpace.agents, function(i, agent) {
-            if (agent.state) agent.changeColor("#f00");
+            if (agent.state) {
+                agent.changeColor("#f00");
+            } else {
+                agent.changeColor("#fff");
+            }
         });
     };
 
