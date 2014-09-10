@@ -13,6 +13,7 @@ function Agent(xPos, yPos, state){
     this.color = "#fff";
     this.radius = 10;
     this.position = [xPos, yPos];//agent doesn't ever "use" this info, just for rendering
+    this.absoluteTranslation = [0, 0];//only used for end nodes - stupid way raphael  does transformations
 
     this.isAnimatingComm = false;//bool used to deal with communication radius animation
 
@@ -29,19 +30,41 @@ Agent.prototype.renderAgent = function(){
     var circle = amorphNameSpace.mainCanvas.circle(this.position[0], this.position[1], this.radius);
     circle.attr({"stroke":"#000", "fill":this.color, "opacity":"0.6"});
 
-    //bind click events to circle - clicking of dragging will remove from canvas
+    //bind events to circle
     var self = this;
-    circle.click(function(){
-        if (self == amorphNameSpace.node1 || self == amorphNameSpace.node2) return;
+    circle.click(function(){//clicking or dragging will remove from canvas
+        if (self == amorphNameSpace.node1 || self == amorphNameSpace.node2) return;//never remove these!
         self.selectForRemoval();
     });
+    circle.hover(function(){//hover will show info
+        if (self.hopCountIndicator) self.hopCountIndicator.remove();
+        self.hopCountIndicator = amorphNameSpace.mainCanvas.text(self.position[0], self.position[1]-14, self.hopCount);
+    }, function(){
+        if (self.hopCountIndicator) self.hopCountIndicator.remove();
+    });
+    if (self == amorphNameSpace.node1 || self == amorphNameSpace.node2){
+        circle.drag(function(dx, dy){
+            self.changePosition(dx, dy);
+        }, function(){
+            if (self.hopCountIndicator) self.hopCountIndicator.remove();
+        }, function(){
+            self.absoluteTranslation[0] = self.absoluteTranslation[0] + self.renderedCircle.getBBox()["x"] + self.radius - self.position[0];
+            self.absoluteTranslation[1] += self.absoluteTranslation[1] + self.renderedCircle.getBBox()["y"] + self.radius - self.position[1];
+            self.position[0] = self.renderedCircle.getBBox()["x"];
+            self.position[1] = self.renderedCircle.getBBox()["y"];
+            console.log(self.absoluteTranslation);
+            $.each(amorphNameSpace.agents, function(i, agent) {
+                agent.getAllNeighbors();//make sure all references are lost
+            });
+            amorphNameSpace.startTransmissions();
+        });
+    }
 
     this.renderedCircle = circle;
 };
 
-Agent.prototype.changePosition = function(xPos, yPos){
-    this.position = [xPos, yPos];
-    this.renderedCircle.transform("T" + this.position[0] + "," + this.position[1]);
+Agent.prototype.changePosition = function(dx, dy){
+    this.renderedCircle.transform("T" + (this.absoluteTranslation[0] + dx) + "," + (this.absoluteTranslation[1] + dy));
 };
 
 Agent.prototype.changeColor = function(color){
@@ -121,7 +144,6 @@ Agent.prototype.renderGrad = function(shouldShowGrad, scalingFactor){
 };
 
 Agent.prototype.selectForRemoval = function(){
-    console.log(this);
     var self = this;
     //remove from neighbors
     $.each(this.neighborAgents, function(i, agent) {
