@@ -60,16 +60,16 @@ $(document).ready(function(){
     });
 
     $("#refresh").click(function(){
-        if (amorphNameSpace.agents){
-            $.each(amorphNameSpace.agents, function(i, agent) {
-                agent.destroy();//make sure all old references are lost
-            });
-        }
-        amorphNameSpace.agents = amorphNameSpace.createAgentArray(50*15+300);
-        $.each(amorphNameSpace.agents, function(i, agent) {
-            agent.getAllNeighbors();//make sure all references are lost
-        });
-        numAgents.slider('value',50);//set initial val
+        amorphNameSpace.startTransmissions();
     });
+
+    var animationSpeed = $("#animationSpeed");
+    animationSpeed.on("slide", function(event, ui){
+        amorphNameSpace.animationSpeed = ui.value+10;
+    });
+    animationSpeed.on("slidechange", function(event, ui){//recalc num neighbors on comm rad change
+        amorphNameSpace.animationSpeed = ui.value+10;
+    });
+    animationSpeed.slider('value',30);//set initial val
 
 });

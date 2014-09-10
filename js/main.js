@@ -65,6 +65,12 @@ $(document).ready(function(){
         amorphNameSpace.node1.hopCount = 0;
         amorphNameSpace.node1.transmitData();//start data transmission from node 1
 
+        $.each(amorphNameSpace.agents, function(i, agent) {
+            if (!agent.hopCount && agent != amorphNameSpace.node1 && agent != amorphNameSpace.node2){//find all islands
+                agent.changeColor("#000");
+            }
+        });
+
     };
 
     amorphNameSpace.renderAllColors = function(){
