@@ -32,10 +32,14 @@ Agent.prototype.renderAgent = function(){
 
     //bind events to circle
     var self = this;
-    circle.click(function(){//clicking or dragging will remove from canvas
-        if (self == amorphNameSpace.node1 || self == amorphNameSpace.node2) return;//never remove these!
-        self.selectForRemoval();
-    });
+    if (self != amorphNameSpace.node1 && self != amorphNameSpace.node2){//never remove these!
+        circle.click(function(){//clicking or dragging will remove from canvas
+            self.selectForRemoval();
+        });
+//        circle.onDragOver(function(){
+//            self.selectForRemoval();
+//        });
+    }
     circle.hover(function(){//hover will show info
         if (self.hopCountIndicator) self.hopCountIndicator.remove();
         self.hopCountIndicator = amorphNameSpace.mainCanvas.text(self.position[0], self.position[1]-14, self.hopCount);
@@ -49,10 +53,9 @@ Agent.prototype.renderAgent = function(){
             if (self.hopCountIndicator) self.hopCountIndicator.remove();
         }, function(){
             self.absoluteTranslation[0] = self.absoluteTranslation[0] + self.renderedCircle.getBBox()["x"] + self.radius - self.position[0];
-            self.absoluteTranslation[1] += self.absoluteTranslation[1] + self.renderedCircle.getBBox()["y"] + self.radius - self.position[1];
-            self.position[0] = self.renderedCircle.getBBox()["x"];
-            self.position[1] = self.renderedCircle.getBBox()["y"];
-            console.log(self.absoluteTranslation);
+            self.absoluteTranslation[1] = self.absoluteTranslation[1] + self.renderedCircle.getBBox()["y"] + self.radius - self.position[1];
+            self.position[0] = self.renderedCircle.getBBox()["x"] + self.radius;
+            self.position[1] = self.renderedCircle.getBBox()["y"] + self.radius;
             $.each(amorphNameSpace.agents, function(i, agent) {
                 agent.getAllNeighbors();//make sure all references are lost
             });
