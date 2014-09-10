@@ -62,6 +62,7 @@ Agent.prototype.transmitData = function(){
 };
 
 Agent.prototype.receiveData = function(hopCount, successorId){
+    if (this == amorphNameSpace.node1) return;//node 1 does not receive data
     if (hopCount>80) return;//avoid crashing the browser
     if (!this.hopCount || hopCount<this.hopCount){
         this.hopCount = hopCount;
