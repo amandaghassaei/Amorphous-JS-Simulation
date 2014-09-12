@@ -9,6 +9,7 @@ function Agent(xPos, yPos, state){
     this.successorId = null;
     this.state = false;//true if part of connection line
     this.color = "#fff";
+    this.transmissionNum = 0;//store num associated with last transmission, so you know whether to expire hop count
     if (state) {
         this.state = state;
         this.color = "f00";
@@ -62,7 +63,6 @@ Agent.prototype.renderAgent = function(){
             $.each(amorphNameSpace.agents, function(i, agent) {
                 agent.getAllNeighbors();//make sure all references are lost
             });
-            amorphNameSpace.startTransmissions();
         });
     }
 
@@ -86,36 +86,42 @@ Agent.prototype.transmitData = function(){
     var dataToTransmit = this.hopCount + 1;
     var self = this;
     $.each(self.neighborAgents, function(i, agent){
-        agent.receiveData(dataToTransmit, self.id);
+        agent.receiveData(dataToTransmit, self.id, self.transmissionNum);
     });
 };
 
-Agent.prototype.receiveData = function(hopCount, successorId){
+Agent.prototype.receiveData = function(hopCount, successorId, transmissionNum){
     if (this == amorphNameSpace.node1) return;//node 1 does not receive data
+    if (transmissionNum > this.transmissionNum) {
+        this.transmissionNum = transmissionNum;
+        this.hopCount = null;//expire last hop
+    } else if (transmissionNum < this.transmissionNum){
+        return;//old transmission, ignore this
+    }
     if (hopCount>80) return;//avoid crashing the browser
     if (!this.hopCount || hopCount<this.hopCount){
         this.hopCount = hopCount;
 
         if (this == amorphNameSpace.node2){
             //if we've reached a node on the line
-            var successor = this.findNeighborWithId(this.successorId);
-            this.successorId = successorId;
-            if (successor){//successor may have been removed
-                successor.setNewState(false);
+
+            if (this.successorId && successorId != this.successorId) {//abandon any outdated successors
+                this.findNeighborWithId(this.successorId).setNewState(false);
             }
+
+            this.successorId = successorId;
             this.findNeighborWithId(successorId).setNewState(true);
         } else {
-            this.state = false;
             //transmit new hop to neighbors
             this.successorId = successorId;
 
             //animate transmission of data
             var self = this;
-            this.renderedCircle.animate({'fill':'blue'}, amorphNameSpace.animationSpeed, function(){
+            var animations = {};
+            if (!self.state) animations['fill'] = 'blue';
+            this.renderedCircle.animate(animations, amorphNameSpace.animationSpeed, function(){
                 self.transmitData();
-                if (self.state) {
-                    self.changeColor("#f00");
-                } else {
+                if (!self.state) {
                     self.changeColor("#fff");
                 }
             });
@@ -133,22 +139,25 @@ Agent.prototype.findNeighborWithId = function(id){
 };
 
 Agent.prototype.setNewState = function(state){
-    this.renderedCircle.stop();//cancel any animations
     if (this == amorphNameSpace.node1 || this == amorphNameSpace.node2) return;//do not change state of node1 or node 2
-    if (state != this.state){//if the state is changing, be sure to relay these changes upstream
+//    if (state != this.state){//if the state is changing, be sure to relay these changes upstream
         this.state = state;
         var self = this;
         var successor = self.findNeighborWithId(this.successorId);
         if (state) {
+            this.renderedCircle.stop();
             this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
                 if (successor) successor.setNewState(state);
+                self.renderedCircle.animate({'fill':'#fff'}, 2000, function(){
+                    self.state = false;
+                });
             });
         } else {
             this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
                 if (successor) successor.setNewState(state);
             });
         }
-    }
+//    }
 
 };
 
@@ -179,7 +188,6 @@ Agent.prototype.selectForRemoval = function(){
     });
     var myIndex = amorphNameSpace.agents.indexOf(this);
     amorphNameSpace.agents.splice(myIndex, 1);
-    amorphNameSpace.startTransmissions();
     this.destroy();
 };
 

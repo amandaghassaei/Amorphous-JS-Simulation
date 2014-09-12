@@ -55,21 +55,11 @@ $(document).ready(function(){
 
     amorphNameSpace.startTransmissions = function(){
 
-        //expire hop count - can I get rid of this?
-        $.each(amorphNameSpace.agents, function(i, agent) {
-            agent.hopCount = null;
-        });
-
         amorphNameSpace.node1.state = true;
+        amorphNameSpace.node1.transmissionNum++;
         amorphNameSpace.node2.state = true;
         amorphNameSpace.node1.hopCount = 0;
         amorphNameSpace.node1.transmitData();//start data transmission from node 1
-
-        $.each(amorphNameSpace.agents, function(i, agent) {
-            if (!agent.hopCount && agent != amorphNameSpace.node1 && agent != amorphNameSpace.node2){//find all islands
-                agent.changeColor("#000");
-            }
-        });
 
     };
 
@@ -98,9 +88,16 @@ $(document).ready(function(){
 
     };
 
+    amorphNameSpace.setNewTransmissionInterval = function(newSpeed){
+        if (amorphNameSpace.transmissionInterval) clearInterval(amorphNameSpace.transmissionInterval);
+        amorphNameSpace.transmissionInterval = setInterval(function(){
+            amorphNameSpace.startTransmissions();
+        }, newSpeed);
+    };
+
     //init stuff - this should only run once
     amorphNameSpace.mainCanvas = Raphael(document.getElementById("svgContainer"), 900, 500);//main canvas
 
-
+    amorphNameSpace.setNewTransmissionInterval(1000);
 
 });

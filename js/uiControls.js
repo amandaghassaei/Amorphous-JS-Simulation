@@ -18,7 +18,7 @@ $(document).ready(function(){
             $.each(amorphNameSpace.agents, function(i, agent) {
                 agent.getAllNeighbors();//make sure all old references are lost
             });
-            amorphNameSpace.startTransmissions();
+//            amorphNameSpace.startTransmissions();
         }
     });
     commRadius.on("slidestart", function(event, ui){
@@ -48,19 +48,21 @@ $(document).ready(function(){
         $.each(amorphNameSpace.agents, function(i, agent) {
             agent.getAllNeighbors();//make sure all references are lost
         });
-        amorphNameSpace.startTransmissions();
+//        amorphNameSpace.startTransmissions();
     });
     numAgents.slider('value',50);//set initial val
+
+    var transmissionSpeed = $("#transmissionSpeed");
+    transmissionSpeed.on("slidechange", function(event, ui){//recalc num neighbors on comm rad change
+        amorphNameSpace.setNewTransmissionInterval((100-ui.value)*20+500);
+    });
+    transmissionSpeed.slider('value',40);//set initial val
 
     amorphNameSpace.shouldShowGrad = false;//toggle display of hop grad (slows rendering slightly)
     $("#gradientVis").click(function(){
         amorphNameSpace.shouldShowGrad = true;
         amorphNameSpace.renderAllColors();
         amorphNameSpace.shouldShowGrad = false;
-    });
-
-    $("#refresh").click(function(){
-        amorphNameSpace.startTransmissions();
     });
 
     var animationSpeed = $("#animationSpeed");
