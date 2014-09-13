@@ -1,12 +1,26 @@
 
 body {
     font-family: Helvetica, Sans-Serif;
+    font-size: 15pt;
+    color: #333;
+    font-weight:300;
+}
+
+a {
+    color: #42ece2;
+    text-decoration: none;
+}
+
+a:hover {
+    color:#42ece2;
 }
 
 #mainWrapper{
     margin-left: auto;
     margin-right: auto;
     width: 900px;
+    padding-top: 100px;
+    padding-bottom: 100px;
 }
 
 #uiControls{
@@ -18,14 +32,16 @@ body {
     padding: 30px;
     display: inline-block;
     float: left;
+    font-size: 12pt;
 }
 
 #svgContainer{
+    padding-top:30px;
     display: inline-block;
 }
 
 .slider {
-    margin:20px 0;
+    margin:10px 0;
 }
 
 .ui-slider-handle {
