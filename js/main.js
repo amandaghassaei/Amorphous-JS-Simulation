@@ -11,9 +11,9 @@ $(document).ready(function(){
         var agents = [];//array of free agents - these will be represented by colored circles
 
         //make two special agents that we will draw a line between - be sure these are at front of array so they don't get removed
-        amorphNameSpace.node1 = new Agent(20, amorphNameSpace.mainCanvas.height/2, true);
+        amorphNameSpace.node1 = new Node(20, amorphNameSpace.mainCanvas.height/2);
         agents.push(amorphNameSpace.node1);
-        amorphNameSpace.node2 = new Agent(amorphNameSpace.mainCanvas.width-20, amorphNameSpace.mainCanvas.height/2, true);
+        amorphNameSpace.node2 = new Node(amorphNameSpace.mainCanvas.width-20, amorphNameSpace.mainCanvas.height/2);
         agents.push(amorphNameSpace.node2);
 
         for (var i=0;i<numAgents;i++){
@@ -26,6 +26,7 @@ $(document).ready(function(){
         $.each(agents, function(i, agent) {
             agent.renderAgent();
         });
+
         //bring end nodes to front
         amorphNameSpace.node1.renderedCircle.toFront();
         amorphNameSpace.node2.renderedCircle.toFront();
@@ -51,16 +52,6 @@ $(document).ready(function(){
                 amorphNameSpace.agents.pop();
             }
         }
-    };
-
-    amorphNameSpace.startTransmissions = function(){
-
-        amorphNameSpace.node1.state = true;
-        amorphNameSpace.node1.transmissionNum++;
-        amorphNameSpace.node2.state = true;
-        amorphNameSpace.node1.hopCount = 0;
-        amorphNameSpace.node1.transmitData();//start data transmission from node 1
-
     };
 
     amorphNameSpace.renderAllColors = function(){
@@ -91,13 +82,10 @@ $(document).ready(function(){
     amorphNameSpace.setNewTransmissionInterval = function(newSpeed){
         if (amorphNameSpace.transmissionInterval) clearInterval(amorphNameSpace.transmissionInterval);
         amorphNameSpace.transmissionInterval = setInterval(function(){
-            amorphNameSpace.startTransmissions();
+            amorphNameSpace.node1.startTransmissions();
         }, newSpeed);
     };
 
     //init stuff - this should only run once
     amorphNameSpace.mainCanvas = Raphael(document.getElementById("svgContainer"), 900, 500);//main canvas
-
-    amorphNameSpace.setNewTransmissionInterval(1000);
-
 });

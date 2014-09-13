@@ -4,16 +4,12 @@
 
 var amorphNameSpace = amorphNameSpace || {};
 
-function Agent(xPos, yPos, state){
+function Agent(xPos, yPos){
     this.id = parseInt(Math.random()*100000);//random id number
     this.successorId = null;
     this.state = false;//true if part of connection line
     this.color = "#fff";
     this.transmissionNum = 0;//store num associated with last transmission, so you know whether to expire hop count
-    if (state) {
-        this.state = state;
-        this.color = "f00";
-    }
 
     this.radius = 10;
     this.position = [xPos, yPos];//agent doesn't ever "use" this info, just for rendering
@@ -36,36 +32,18 @@ Agent.prototype.renderAgent = function(){
 
     //bind events to circle
     var self = this;
-    if (self != amorphNameSpace.node1 && self != amorphNameSpace.node2){//never remove these!
-        circle.click(function(){//clicking or dragging will remove from canvas
-            self.selectForRemoval();
-        });
+    circle.click(function(){//clicking or dragging will remove from canvas
+        self.selectForRemoval();
+    });
 //        circle.onDragOver(function(){
 //            self.selectForRemoval();
 //        });
-    }
     circle.hover(function(){//hover will show info
         if (self.hopCountIndicator) self.hopCountIndicator.remove();
         self.hopCountIndicator = amorphNameSpace.mainCanvas.text(self.position[0], self.position[1]-14, self.hopCount);
     }, function(){
         if (self.hopCountIndicator) self.hopCountIndicator.remove();
     });
-    if (self == amorphNameSpace.node1 || self == amorphNameSpace.node2){
-        circle.drag(function(dx, dy){
-            self.changePosition(dx, dy);
-        }, function(){
-            if (self.hopCountIndicator) self.hopCountIndicator.remove();
-        }, function(){
-            self.absoluteTranslation[0] = self.absoluteTranslation[0] + self.renderedCircle.getBBox()["x"] + self.radius - self.position[0];
-            self.absoluteTranslation[1] = self.absoluteTranslation[1] + self.renderedCircle.getBBox()["y"] + self.radius - self.position[1];
-            self.position[0] = self.renderedCircle.getBBox()["x"] + self.radius;
-            self.position[1] = self.renderedCircle.getBBox()["y"] + self.radius;
-            $.each(amorphNameSpace.agents, function(i, agent) {
-                agent.getAllNeighbors();//make sure all references are lost
-            });
-        });
-    }
-
     this.renderedCircle = circle;
 };
 
@@ -102,18 +80,14 @@ Agent.prototype.receiveData = function(hopCount, successorId, transmissionNum){
     if (!this.hopCount || hopCount<this.hopCount){
         this.hopCount = hopCount;
 
-        if (this == amorphNameSpace.node2){
-            //if we've reached a node on the line
+        if (this.state && this.successorId && this.successorId != successorId){//if successor is changing - relay that up the line
+            this.findNeighborWithId(this.successorId).setNewState(false);
+        }
+        this.successorId = successorId;
 
-            if (this.successorId && successorId != this.successorId) {//abandon any outdated successors
-                this.findNeighborWithId(this.successorId).setNewState(false);
-            }
-
-            this.successorId = successorId;
+        if (this == amorphNameSpace.node2){//if we've reached a node on the line
             this.findNeighborWithId(successorId).setNewState(true);
-        } else {
-            //transmit new hop to neighbors
-            this.successorId = successorId;
+        } else {//transmit new hop to neighbors
 
             //animate transmission of data
             var self = this;
@@ -139,8 +113,7 @@ Agent.prototype.findNeighborWithId = function(id){
 };
 
 Agent.prototype.setNewState = function(state){
-    if (this == amorphNameSpace.node1 || this == amorphNameSpace.node2) return;//do not change state of node1 or node 2
-//    if (state != this.state){//if the state is changing, be sure to relay these changes upstream
+    if (state != this.state){//if the state is changing, be sure to relay these changes upstream
         this.state = state;
         var self = this;
         var successor = self.findNeighborWithId(this.successorId);
@@ -148,16 +121,16 @@ Agent.prototype.setNewState = function(state){
             this.renderedCircle.stop();
             this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
                 if (successor) successor.setNewState(state);
-                self.renderedCircle.animate({'fill':'#fff'}, 2000, function(){
-                    self.state = false;
-                });
+//                self.renderedCircle.animate({'fill':'#fff'}, 2000, function(){
+//                    self.state = false;//timeout for state
+//                });
             });
         } else {
             this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
                 if (successor) successor.setNewState(state);
             });
         }
-//    }
+    }
 
 };
 
