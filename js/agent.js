@@ -61,10 +61,11 @@ Agent.prototype.transmitData = function(){
         console.log("no neighbors");
         return;
     }
-    var dataToTransmit = this.hopCount + 1;
+    var hopToTransmit = this.hopCount + 1;
+    var transmissionNum = this.transmissionNum;
     var self = this;
     $.each(self.neighborAgents, function(i, agent){
-        agent.receiveData(dataToTransmit, self.id, self.transmissionNum);
+        agent.receiveData(hopToTransmit, self.id, transmissionNum);
     });
 };
 
@@ -81,21 +82,23 @@ Agent.prototype.receiveData = function(hopCount, successorId, transmissionNum){
         this.hopCount = hopCount;
 
         if (this.state && this.successorId && this.successorId != successorId){//if successor is changing - relay that up the line
-            this.findNeighborWithId(this.successorId).setNewState(false);
+//            this.findNeighborWithId(this.successorId).setNewState(false);
         }
         this.successorId = successorId;
 
         if (this == amorphNameSpace.node2){//if we've reached a node on the line
+            console.log(this.hopCount);
+            console.log(this.successorId);
             this.findNeighborWithId(successorId).setNewState(true);
         } else {//transmit new hop to neighbors
-
             //animate transmission of data
             var self = this;
-            var animations = {};
-            if (!self.state) animations['fill'] = 'blue';
+            var animations = {"fill":"blue"};
             this.renderedCircle.animate(animations, amorphNameSpace.animationSpeed, function(){
                 self.transmitData();
-                if (!self.state) {
+                if (self.state){
+                    self.changeColor("#f00");
+                } else {
                     self.changeColor("#fff");
                 }
             });
@@ -113,24 +116,26 @@ Agent.prototype.findNeighborWithId = function(id){
 };
 
 Agent.prototype.setNewState = function(state){
-    if (state != this.state){//if the state is changing, be sure to relay these changes upstream
+//    if (state != this.state){//if the state is changing, be sure to relay these changes upstream
         this.state = state;
         var self = this;
-        var successor = self.findNeighborWithId(this.successorId);
+        var successor = this.findNeighborWithId(this.successorId);
         if (state) {
-            this.renderedCircle.stop();
-            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
+//            this.renderedCircle.stop();
+            this.changeColor("#f00");
+//            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
                 if (successor) successor.setNewState(state);
-//                self.renderedCircle.animate({'fill':'#fff'}, 2000, function(){
+//                self.renderedCircle.animate({'fill':'#fff'}, 500, function(){
 //                    self.state = false;//timeout for state
 //                });
-            });
+//            });
         } else {
-            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
+            this.changeColor("#fff");
+//            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
                 if (successor) successor.setNewState(state);
-            });
+//            });
         }
-    }
+//    }
 
 };
 
