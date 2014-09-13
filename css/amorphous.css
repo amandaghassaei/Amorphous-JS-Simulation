@@ -6,15 +6,18 @@ body {
 #mainWrapper{
     margin-left: auto;
     margin-right: auto;
-    width: 1200px;
+    width: 900px;
 }
 
 #uiControls{
-    width: 250px;
-    padding-top: 30px;
-    padding-left: 25px;
-    float: right;
+    width: 900px;
+}
+
+.uiControlsSub {
+    width:390px;
+    padding: 30px;
     display: inline-block;
+    float: left;
 }
 
 #svgContainer{
@@ -23,4 +26,18 @@ body {
 
 .slider {
     margin:20px 0;
+}
+
+.ui-slider-handle {
+    outline: 0 none !important;
+}
+
+.ui-state-hover {
+    background: #f6f6f6 !important;
+    border-color: #ccc !important;
+}
+
+.ui-state-focus {
+    background: #f6f6f6 !important;
+    border-color: #ccc !important;
 }
