@@ -93,7 +93,7 @@ Agent.prototype.receiveData = function(hopCount, successorId, transmissionNum){
 //        } else {//transmit new hop to neighbors
             //animate transmission of data
             var self = this;
-            this.renderedCircle.animate({"fill":"blue"}, amorphNameSpace.animationSpeed, function(){
+            this.renderedCircle.animate({"fill":"grey"}, amorphNameSpace.animationSpeed, function(){
                 self.transmitData();
                 if (self.state){
                     self.changeColor("#f00");
@@ -122,7 +122,8 @@ Agent.prototype.setNewState = function(state){
         var successor = this.findNeighborWithId(this.successorId);
         if (state) {
             this.changeColor("#f00");
-            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
+            this.renderedCircle.animate({'fill':'#400'}, amorphNameSpace.animationSpeed, function(){
+                self.changeColor("#f00");
                 if (successor) successor.setNewState(state);
                 if (self.stateTimeout) clearTimeout(self.stateTimeout);
                 self.stateTimeout = setTimeout(function(){
