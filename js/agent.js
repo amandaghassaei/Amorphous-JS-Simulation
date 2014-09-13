@@ -82,19 +82,18 @@ Agent.prototype.receiveData = function(hopCount, successorId, transmissionNum){
         this.hopCount = hopCount;
 
         if (this.state && this.successorId && this.successorId != successorId){//if successor is changing - relay that up the line
-//            this.findNeighborWithId(this.successorId).setNewState(false);
+            var successor = this.findNeighborWithId(this.successorId);
+            if (successor) successor.setNewState(false);
         }
         this.successorId = successorId;
 
         if (this == amorphNameSpace.node2){//if we've reached a node on the line
-            console.log(this.hopCount);
-            console.log(this.successorId);
             this.findNeighborWithId(successorId).setNewState(true);
-        } else {//transmit new hop to neighbors
+        }
+//        } else {//transmit new hop to neighbors
             //animate transmission of data
             var self = this;
-            var animations = {"fill":"blue"};
-            this.renderedCircle.animate(animations, amorphNameSpace.animationSpeed, function(){
+            this.renderedCircle.animate({"fill":"blue"}, amorphNameSpace.animationSpeed, function(){
                 self.transmitData();
                 if (self.state){
                     self.changeColor("#f00");
@@ -102,13 +101,14 @@ Agent.prototype.receiveData = function(hopCount, successorId, transmissionNum){
                     self.changeColor("#fff");
                 }
             });
-        }
+//        }
     }
 };
 
 Agent.prototype.findNeighborWithId = function(id){
     if (!id) return null;
     var successor = null;
+    if (!this.neighborAgents) return successor;
     $.each(this.neighborAgents, function(i, agent) {
         if (agent.id == id) successor = agent;
     });
@@ -121,19 +121,21 @@ Agent.prototype.setNewState = function(state){
         var self = this;
         var successor = this.findNeighborWithId(this.successorId);
         if (state) {
-//            this.renderedCircle.stop();
             this.changeColor("#f00");
-//            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
+            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
                 if (successor) successor.setNewState(state);
-//                self.renderedCircle.animate({'fill':'#fff'}, 500, function(){
-//                    self.state = false;//timeout for state
-//                });
-//            });
+                if (self.stateTimeout) clearTimeout(self.stateTimeout);
+                self.stateTimeout = setTimeout(function(){
+                    self.state = false;
+                    self.changeColor("#fff");
+                }, 3000);//expire state
+            });
         } else {
+            if (this.stateTimeout) clearTimeout(this.stateTimeout);
             this.changeColor("#fff");
-//            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
+            this.renderedCircle.animate({'fill':'#f00'}, amorphNameSpace.animationSpeed, function(){
                 if (successor) successor.setNewState(state);
-//            });
+            });
         }
 //    }
 
@@ -228,6 +230,7 @@ Agent.prototype.animateNeighborCommunication = function(){
 
 Agent.prototype.destroy = function(){
     this.hideNetworking();
+    clearTimeout(this.stateTimeout);
     if (this.neighborhood){
         this.neighborhood.remove();
         this.neighborhood = null;
